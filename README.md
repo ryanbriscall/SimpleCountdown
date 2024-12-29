@@ -16,6 +16,10 @@ index.html?amount=60
 ```
 
 ```
+index.html?amount=60&fade=1
+```
+
+```
 index.html?amount=60&color=white
 ```
 
