@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Countdown</title>
+		<style>
+			html, body { overflow:hidden; margin:0 }
+			body { line-height:1; font-size:100vh; font-family:Consolas }
+			#timer {
+				visibility: visible;
+				opacity: 1;
+				transition: opacity 2s linear;
+				color: #FFF;
+				text-shadow: 1vh 1vh 3vh #000, 1vh 1vh 3vh #000;
+				text-align:right;
+			}
+			#timer.fade {
+				visibility: hidden;
+				opacity: 0;
+				transition: visibility 0s 2s, opacity 2s linear;
+			}
+		</style>
+		<script>
+			var timerInterval = null;
+
+			document.addEventListener("DOMContentLoaded", function() {
+				var urlParams = new URLSearchParams(window.location.search);
+				var amount = (urlParams.get('amount') === null) ? 0 : +urlParams.get('amount');
+				var fade = (urlParams.get('fade') === null) ? 0 : +urlParams.get('fade');
+				var color = (urlParams.get('color') === null) ? 'white' : urlParams.get('color');
+				if (/^[0-9A-F]{3,6}$/i.test(color)) {
+					color = '#'+color;
+				}
+				start({
+					seconds: amount,
+					fade: fade,
+					color: color,
+					selector: "#timer"
+				});
+			});
+
+			function start(cfg) {
+				var duration = cfg.seconds;
+				var fade = cfg.fade;
+				var color = cfg.color;
+				var el = document.querySelector(cfg.selector);
+				el.style.color = color;
+
+				var start = Date.now();
+				var diff;
+				var minutes;
+				var seconds;
+
+				function timer() {
+					var normalizedDiff = duration - (((Date.now() - start) / 1000) | 0);
+
+					diff = normalizedDiff;
+
+					if (normalizedDiff >= 0) {
+						minutes = (diff / 60) | 0;
+						seconds = diff % 60 | 0;
+
+						// minutes = minutes < 10 ? "0" + minutes : minutes;
+						seconds = seconds < 10 ? "0" + seconds : seconds;
+
+						el.textContent = minutes + ":" + seconds;
+					}
+					else {
+						if (fade) {
+							el.classList.add('fade');
+						}
+						clearInterval(timerInterval);
+					}
+				}
+				timer();
+				timerInterval = setInterval(timer, 1000);
+			}
+		</script>
+	</head>
+	<body>
+		<div id="timer"></div>
+	</body>
+</html>
